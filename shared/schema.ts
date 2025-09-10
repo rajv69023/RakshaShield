@@ -126,6 +126,129 @@ export const evidenceVault = pgTable("evidence_vault", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Advanced AI and Safety Features Tables
+
+export const cctvFeeds = pgTable("cctv_feeds", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  feedId: text("feed_id").notNull().unique(),
+  location: jsonb("location").notNull(), // { lat, lng, address, area }
+  status: text("status").notNull().default("active"), // active, offline, maintenance
+  feedUrl: text("feed_url"),
+  aiAnalysisEnabled: boolean("ai_analysis_enabled").default(true),
+  crowdDensityCapable: boolean("crowd_density_capable").default(true),
+  faceDetectionCapable: boolean("face_detection_capable").default(false),
+  lastAnalysis: timestamp("last_analysis"),
+  authority: text("authority"), // police, municipality, private
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const crowdAnalysis = pgTable("crowd_analysis", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  cctvFeedId: uuid("cctv_feed_id").references(() => cctvFeeds.id),
+  location: jsonb("location").notNull(),
+  crowdDensity: text("crowd_density").notNull(), // low, medium, high, critical
+  crowdSize: integer("crowd_size"),
+  movementPattern: text("movement_pattern"), // normal, agitated, panic, dispersing, gathering
+  aggressionLevel: text("aggression_level").default("none"), // none, low, medium, high, dangerous
+  emotionalState: text("emotional_state"), // calm, excited, tense, fearful, angry
+  riskScore: real("risk_score").notNull(), // 0-100
+  threatIndicators: jsonb("threat_indicators"), // array of detected threats
+  recommendations: jsonb("recommendations"),
+  aiConfidence: real("ai_confidence").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const threatDetections = pgTable("threat_detections", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  crowdAnalysisId: uuid("crowd_analysis_id").references(() => crowdAnalysis.id),
+  location: jsonb("location").notNull(),
+  threatType: text("threat_type").notNull(), // suspicious_behavior, weapon_detected, fight, harassment, stalking
+  severity: text("severity").notNull(), // low, medium, high, critical
+  confidence: real("confidence").notNull(),
+  description: text("description"),
+  evidenceUrls: jsonb("evidence_urls"), // array of URLs to evidence
+  targetGender: text("target_gender"), // male, female, unknown
+  isWomenTargeted: boolean("is_women_targeted").default(false),
+  alertGenerated: boolean("alert_generated").default(false),
+  responseStatus: text("response_status").default("pending"), // pending, investigating, resolved
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const satelliteBackup = pgTable("satellite_backup", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  alertId: uuid("alert_id").references(() => emergencyAlerts.id),
+  messageType: text("message_type").notNull(), // emergency_alert, status_update, location_share
+  messageContent: jsonb("message_content").notNull(),
+  satelliteProvider: text("satellite_provider"), // starlink, iridium, globalstar
+  transmissionStatus: text("transmission_status").default("pending"), // pending, sent, delivered, failed
+  location: jsonb("location"),
+  batteryLevel: integer("battery_level"),
+  signalStrength: integer("signal_strength"),
+  createdAt: timestamp("created_at").defaultNow(),
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+});
+
+export const arSafetyData = pgTable("ar_safety_data", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  location: jsonb("location").notNull(),
+  arFeature: text("ar_feature").notNull(), // path_highlight, threat_overlay, safe_zone_guide, guardian_indicator
+  arData: jsonb("ar_data").notNull(),
+  visibilityRadius: real("visibility_radius").default(100), // meters
+  priority: text("priority").default("medium"), // low, medium, high, critical
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const quantumBlockchain = pgTable("quantum_blockchain", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  evidenceId: uuid("evidence_id").references(() => evidenceVault.id).notNull(),
+  blockHash: text("block_hash").notNull().unique(),
+  previousBlockHash: text("previous_block_hash"),
+  merkleRoot: text("merkle_root").notNull(),
+  quantumSignature: text("quantum_signature").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+  validatorNodes: jsonb("validator_nodes"),
+  consensusProof: text("consensus_proof"),
+  isQuantumResistant: boolean("is_quantum_resistant").default(true),
+  chainVerified: boolean("chain_verified").default(false),
+});
+
+export const predictiveAnalytics = pgTable("predictive_analytics", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid("user_id").references(() => users.id),
+  predictionType: text("prediction_type").notNull(), // route_safety, time_risk, location_risk, behavior_pattern
+  location: jsonb("location"),
+  timeframe: text("timeframe"), // next_hour, next_day, next_week
+  riskProbability: real("risk_probability").notNull(), // 0-1
+  riskFactors: jsonb("risk_factors"),
+  recommendations: jsonb("recommendations"),
+  accuracyScore: real("accuracy_score"),
+  modelVersion: text("model_version"),
+  createdAt: timestamp("created_at").defaultNow(),
+  validatedAt: timestamp("validated_at"),
+});
+
+export const smartWearables = pgTable("smart_wearables", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  deviceType: text("device_type").notNull(), // smart_fabric, panic_jewelry, fitness_tracker, smartwatch
+  deviceId: text("device_id").notNull().unique(),
+  isActive: boolean("is_active").default(true),
+  batteryLevel: integer("battery_level"),
+  lastHeartbeat: timestamp("last_heartbeat"),
+  capabilities: jsonb("capabilities"), // array of supported features
+  firmwareVersion: text("firmware_version"),
+  encryptionKey: text("encryption_key"),
+  emergencyProtocol: jsonb("emergency_protocol"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   guardianProfile: many(guardians),
@@ -159,9 +282,40 @@ export const aiInteractionsRelations = relations(aiInteractions, ({ one }) => ({
   user: one(users, { fields: [aiInteractions.userId], references: [users.id] }),
 }));
 
-export const evidenceVaultRelations = relations(evidenceVault, ({ one }) => ({
+export const evidenceVaultRelations = relations(evidenceVault, ({ one, many }) => ({
   alert: one(emergencyAlerts, { fields: [evidenceVault.alertId], references: [emergencyAlerts.id] }),
   user: one(users, { fields: [evidenceVault.userId], references: [users.id] }),
+  quantumBlocks: many(quantumBlockchain),
+}));
+
+export const crowdAnalysisRelations = relations(crowdAnalysis, ({ one, many }) => ({
+  cctvFeed: one(cctvFeeds, { fields: [crowdAnalysis.cctvFeedId], references: [cctvFeeds.id] }),
+  threatDetections: many(threatDetections),
+}));
+
+export const threatDetectionsRelations = relations(threatDetections, ({ one }) => ({
+  crowdAnalysis: one(crowdAnalysis, { fields: [threatDetections.crowdAnalysisId], references: [crowdAnalysis.id] }),
+}));
+
+export const satelliteBackupRelations = relations(satelliteBackup, ({ one }) => ({
+  user: one(users, { fields: [satelliteBackup.userId], references: [users.id] }),
+  alert: one(emergencyAlerts, { fields: [satelliteBackup.alertId], references: [emergencyAlerts.id] }),
+}));
+
+export const arSafetyDataRelations = relations(arSafetyData, ({ one }) => ({
+  user: one(users, { fields: [arSafetyData.userId], references: [users.id] }),
+}));
+
+export const quantumBlockchainRelations = relations(quantumBlockchain, ({ one }) => ({
+  evidence: one(evidenceVault, { fields: [quantumBlockchain.evidenceId], references: [evidenceVault.id] }),
+}));
+
+export const predictiveAnalyticsRelations = relations(predictiveAnalytics, ({ one }) => ({
+  user: one(users, { fields: [predictiveAnalytics.userId], references: [users.id] }),
+}));
+
+export const smartWearablesRelations = relations(smartWearables, ({ one }) => ({
+  user: one(users, { fields: [smartWearables.userId], references: [users.id] }),
 }));
 
 // Insert schemas
@@ -210,6 +364,52 @@ export const insertEvidenceVaultSchema = createInsertSchema(evidenceVault).omit(
   createdAt: true,
 });
 
+// Advanced features insert schemas
+export const insertCctvFeedSchema = createInsertSchema(cctvFeeds).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCrowdAnalysisSchema = createInsertSchema(crowdAnalysis).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertThreatDetectionSchema = createInsertSchema(threatDetections).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSatelliteBackupSchema = createInsertSchema(satelliteBackup).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+  deliveredAt: true,
+});
+
+export const insertArSafetyDataSchema = createInsertSchema(arSafetyData).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertQuantumBlockchainSchema = createInsertSchema(quantumBlockchain).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertPredictiveAnalyticsSchema = createInsertSchema(predictiveAnalytics).omit({
+  id: true,
+  createdAt: true,
+  validatedAt: true,
+});
+
+export const insertSmartWearableSchema = createInsertSchema(smartWearables).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -227,3 +427,21 @@ export type AiInteraction = typeof aiInteractions.$inferSelect;
 export type InsertAiInteraction = z.infer<typeof insertAiInteractionSchema>;
 export type EvidenceVault = typeof evidenceVault.$inferSelect;
 export type InsertEvidenceVault = z.infer<typeof insertEvidenceVaultSchema>;
+
+// Advanced features types
+export type CctvFeed = typeof cctvFeeds.$inferSelect;
+export type InsertCctvFeed = z.infer<typeof insertCctvFeedSchema>;
+export type CrowdAnalysis = typeof crowdAnalysis.$inferSelect;
+export type InsertCrowdAnalysis = z.infer<typeof insertCrowdAnalysisSchema>;
+export type ThreatDetection = typeof threatDetections.$inferSelect;
+export type InsertThreatDetection = z.infer<typeof insertThreatDetectionSchema>;
+export type SatelliteBackup = typeof satelliteBackup.$inferSelect;
+export type InsertSatelliteBackup = z.infer<typeof insertSatelliteBackupSchema>;
+export type ArSafetyData = typeof arSafetyData.$inferSelect;
+export type InsertArSafetyData = z.infer<typeof insertArSafetyDataSchema>;
+export type QuantumBlockchain = typeof quantumBlockchain.$inferSelect;
+export type InsertQuantumBlockchain = z.infer<typeof insertQuantumBlockchainSchema>;
+export type PredictiveAnalytics = typeof predictiveAnalytics.$inferSelect;
+export type InsertPredictiveAnalytics = z.infer<typeof insertPredictiveAnalyticsSchema>;
+export type SmartWearable = typeof smartWearables.$inferSelect;
+export type InsertSmartWearable = z.infer<typeof insertSmartWearableSchema>;
