@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
 import Map from "@/pages/map";
 import Guardians from "@/pages/guardians";
+import AiCrowd from "@/pages/ai-crowd";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
@@ -20,6 +21,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/map" component={Map} />
           <Route path="/guardians" component={Guardians} />
+          <Route path="/ai-crowd" component={AiCrowd} />
           <Route path="/reports" component={Reports} />
           <Route path="/settings" component={Settings} />
           <Route component={NotFound} />

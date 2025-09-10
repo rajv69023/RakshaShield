@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, Users, BarChart3, Settings } from "lucide-react";
+import { Home, Map, Users, Brain, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navigation() {
@@ -9,7 +9,7 @@ export default function Navigation() {
     { path: "/", icon: Home, label: "Home", testId: "nav-home" },
     { path: "/map", icon: Map, label: "Map", testId: "nav-map" },
     { path: "/guardians", icon: Users, label: "Guardians", testId: "nav-guardians" },
-    { path: "/reports", icon: BarChart3, label: "Reports", testId: "nav-reports" },
+    { path: "/ai-crowd", icon: Brain, label: "AI Crowd", testId: "nav-ai-crowd" },
     { path: "/settings", icon: Settings, label: "Settings", testId: "nav-settings" },
   ];
 

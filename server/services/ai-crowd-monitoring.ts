@@ -3,7 +3,17 @@ import { cctvFeeds, crowdAnalysis, threatDetections } from "@shared/schema";
 import { eq, desc, and, gte } from "drizzle-orm";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openai && process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  if (!openai) {
+    throw new Error("OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.");
+  }
+  return openai;
+}
 
 interface CrowdAnalysisInput {
   cctvFeedId?: string;
@@ -90,7 +100,7 @@ export class AiCrowdMonitoringService {
         }
       ];
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAI().chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages,
         response_format: { type: "json_object" },
@@ -240,7 +250,7 @@ export class AiCrowdMonitoringService {
         Focus on patterns that affect women's safety specifically.
       `;
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAI().chat.completions.create({
         model: "gpt-5", // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
         messages: [
           {

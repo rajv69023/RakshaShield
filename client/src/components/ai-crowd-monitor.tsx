@@ -104,10 +104,10 @@ export function AiCrowdMonitor() {
   // Fetch real-time crowd analysis for current location
   const { data: locationAnalysis } = useQuery({
     queryKey: ['/api/ai/crowd-analysis/location', currentLocation?.lat, currentLocation?.lng],
-    queryFn: () => {
-      if (!currentLocation) return null;
-      return fetch(`/api/ai/crowd-analysis/location?lat=${currentLocation.lat}&lng=${currentLocation.lng}&radius=0.5`)
-        .then(res => res.json());
+    queryFn: async () => {
+      if (!currentLocation) throw new Error('No location');
+      const response = await fetch(`/api/ai/crowd-analysis/location?lat=${currentLocation.lat}&lng=${currentLocation.lng}&radius=0.5`);
+      return response.json();
     },
     enabled: !!currentLocation && analysisMode === 'realtime',
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -116,10 +116,10 @@ export function AiCrowdMonitor() {
   // Fetch safety forecast
   const { data: safetyForecast } = useQuery<SafetyForecast>({
     queryKey: ['/api/predictive/safety-forecast', currentLocation?.lat, currentLocation?.lng],
-    queryFn: () => {
-      if (!currentLocation) return null;
-      return fetch(`/api/predictive/safety-forecast/${currentLocation.lat}/${currentLocation.lng}?timeframe=next_hour`)
-        .then(res => res.json());
+    queryFn: async () => {
+      if (!currentLocation) throw new Error('No location');
+      const response = await fetch(`/api/predictive/safety-forecast/${currentLocation.lat}/${currentLocation.lng}?timeframe=next_hour`);
+      return response.json();
     },
     enabled: !!currentLocation,
   });
@@ -127,10 +127,10 @@ export function AiCrowdMonitor() {
   // Fetch AR safety overlay
   const { data: arSafetyData } = useQuery<ARSafetyData>({
     queryKey: ['/api/ar/safety-overlay', currentLocation?.lat, currentLocation?.lng],
-    queryFn: () => {
-      if (!currentLocation) return null;
-      return fetch(`/api/ar/safety-overlay/${currentLocation.lat}/${currentLocation.lng}?radius=200`)
-        .then(res => res.json());
+    queryFn: async () => {
+      if (!currentLocation) throw new Error('No location');
+      const response = await fetch(`/api/ar/safety-overlay/${currentLocation.lat}/${currentLocation.lng}?radius=200`);
+      return response.json();
     },
     enabled: !!currentLocation,
   });
@@ -401,7 +401,7 @@ export function AiCrowdMonitor() {
               {arSafetyData ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {arSafetyData.safetyFeatures.map((feature, index) => (
+                    {(arSafetyData.safetyFeatures || []).map((feature: any, index: number) => (
                       <Card key={index} className="p-4">
                         <div className="flex items-start space-x-3">
                           {feature.type === 'safe_path' && <MapPin className="h-5 w-5 text-green-600 mt-0.5" />}
@@ -434,7 +434,7 @@ export function AiCrowdMonitor() {
                   <div>
                     <h4 className="font-medium mb-3">Emergency AR Options</h4>
                     <div className="flex flex-wrap gap-2">
-                      {arSafetyData.emergencyOptions.map((option, index) => (
+                      {(arSafetyData.emergencyOptions || []).map((option: any, index: number) => (
                         <Button 
                           key={index} 
                           variant="outline" 
@@ -473,7 +473,7 @@ export function AiCrowdMonitor() {
                   <div>
                     <h4 className="font-medium mb-3">Safety Predictions</h4>
                     <div className="space-y-3">
-                      {safetyForecast.predictions.map((prediction, index) => (
+                      {(safetyForecast.predictions || []).map((prediction: any, index: number) => (
                         <Card key={index} className="p-4">
                           <div className="flex justify-between items-start mb-3">
                             <h5 className="font-medium capitalize">{prediction.time}</h5>
@@ -492,7 +492,7 @@ export function AiCrowdMonitor() {
                             <div>
                               <span className="font-medium">Risk Factors:</span>
                               <ul className="mt-1 space-y-1">
-                                {prediction.risk_factors.map((factor, i) => (
+                                {(prediction.risk_factors || []).map((factor: string, i: number) => (
                                   <li key={i} className="text-gray-600">• {factor}</li>
                                 ))}
                               </ul>
@@ -500,7 +500,7 @@ export function AiCrowdMonitor() {
                             <div>
                               <span className="font-medium">Recommendations:</span>
                               <ul className="mt-1 space-y-1">
-                                {prediction.recommendations.map((rec, i) => (
+                                {(prediction.recommendations || []).map((rec: string, i: number) => (
                                   <li key={i} className="text-gray-600">• {rec}</li>
                                 ))}
                               </ul>
@@ -514,7 +514,7 @@ export function AiCrowdMonitor() {
                   <div>
                     <h4 className="font-medium mb-3">Alternative Safe Routes</h4>
                     <div className="space-y-2">
-                      {safetyForecast.alternativeRoutes.map((route, index) => (
+                      {(safetyForecast.alternativeRoutes || []).map((route: any, index: number) => (
                         <Card key={index} className="p-3">
                           <div className="flex justify-between items-center">
                             <div>
