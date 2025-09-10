@@ -1,0 +1,67 @@
+Raksha - Advanced Women's Safety Platform
+Overview
+Raksha is a comprehensive women's safety platform that provides real-time emergency response, biometric monitoring, and AI-powered safety assistance. The application combines modern web technologies with advanced safety features including SOS alerts, voice stress analysis, location-based safety recommendations, and a guardian network system. Built as a full-stack TypeScript application, it features a React frontend with Express backend, PostgreSQL database, and WebSocket real-time communication.
+
+User Preferences
+Preferred communication style: Simple, everyday language.
+
+System Architecture
+Frontend Architecture
+React SPA: Built with Vite for fast development and optimized builds
+UI Framework: Shadcn/ui components with Radix UI primitives for accessibility
+Styling: Tailwind CSS with custom design tokens and responsive design
+State Management: React Query for server state, React hooks for local state
+Routing: Wouter for lightweight client-side routing
+Real-time Communication: WebSocket integration for live emergency alerts
+Backend Architecture
+Express.js Server: RESTful API with middleware for logging and error handling
+TypeScript: Full type safety across frontend and backend
+Real-time Features: WebSocket server for emergency broadcasts and live updates
+Service Layer: Modular services for emergency response, AI analysis, and geolocation
+Storage Abstraction: Interface-based storage layer supporting multiple implementations
+Database Design
+PostgreSQL: Primary database with Drizzle ORM for type-safe queries
+Schema Structure:
+Users with emergency contacts and biometric settings
+Emergency alerts with location and biometric data
+Guardian network for community response
+Evidence vault for secure data storage
+AI interactions for chat history and sentiment analysis
+Key Features
+Emergency System: Multi-trigger SOS (manual, biometric, voice stress) with automatic contact alerting
+Biometric Monitoring: Heart rate and stress level tracking with threshold-based alerts
+AI Companion: OpenAI integration for voice stress analysis and safety recommendations
+Location Services: Safety zone mapping and location-based risk assessment
+Guardian Network: Community-based emergency response system
+Evidence Vault: Secure storage for emergency-related media and data
+Security & Safety
+Real-time Alerts: WebSocket-based emergency broadcasting to contacts and guardians
+Location Privacy: Configurable location sharing with emergency override
+Data Protection: Secure evidence storage with tamper-proof blockchain concepts
+Multi-channel Communication: SMS, calls, and in-app notifications for emergency contacts
+External Dependencies
+Core Technologies
+@neondatabase/serverless: Serverless PostgreSQL connection for cloud deployment
+drizzle-orm & drizzle-kit: Type-safe ORM with schema management and migrations
+@tanstack/react-query: Server state management and caching
+wouter: Lightweight React router for SPA navigation
+UI & Styling
+@radix-ui/react-: Complete suite of accessible UI primitives (dialog, dropdown, toast, etc.)
+tailwindcss: Utility-first CSS framework with custom design system
+class-variance-authority: Type-safe variant management for components
+lucide-react: Modern icon library for consistent iconography
+Real-time & Communication
+ws (WebSocket): Real-time bidirectional communication for emergency alerts
+express-session with connect-pg-simple: Session management with PostgreSQL store
+Development Tools
+vite: Fast build tool with HMR and optimized production builds
+typescript: Full type safety across the entire application stack
+esbuild: Fast JavaScript bundler for server-side code
+@replit/vite-plugin-: Replit-specific development tooling and error handling
+AI & Analysis
+OpenAI API: Integration for voice stress analysis and AI-powered safety recommendations
+Audio processing capabilities: For real-time voice stress detection and analysis
+Validation & Forms
+zod: Runtime type validation for API endpoints and form data
+@hookform/resolvers: Form validation integration with React Hook Form
+drizzle-zod: Schema validation integration between Drizzle and Zod
